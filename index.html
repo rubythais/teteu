@@ -2247,6 +2247,12 @@ function showEndScreen(){
   showScreen('screen-end');
   unlockAchievement('nova_fase');
   const video = document.getElementById('end-video');
+  video.onerror = ()=>{
+    video.onerror = null;
+    video.src = 'kling_20260820_VIDEO_Take_Image_2419_0.mp4';
+    video.load();
+    video.play().catch(()=>{});
+  };
   video.src = 'public/kling_20260820_VIDEO_Take_Image_2419_0.mp4';
   try{
     video.currentTime = 0;
