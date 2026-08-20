@@ -346,7 +346,7 @@ html,body{
 #game-hud{
   position:relative; z-index:5; display:flex; flex-wrap:wrap; gap:8px 14px;
   padding:8px 10px; background:rgba(8,8,12,.85); border-bottom:1px solid var(--line);
-  font-size:14px;
+  font-size:14px; pointer-events:none;
 }
 .hud-chip{display:flex; align-items:center; gap:6px; min-width:96px;}
 .hud-chip .mini-bar{width:56px; height:8px; border:1px solid var(--gold-dim); background:#0c0c12; border-radius:2px; overflow:hidden;}
@@ -365,6 +365,7 @@ html,body{
 #mobile-controls{
   position:absolute; bottom:16px; left:0; right:0; display:none;
   justify-content:space-between; align-items:center; padding:0 20px; z-index:30; pointer-events:none;
+  isolation:isolate;
 }
 #mobile-controls.on{display:flex;}
 #joystick-zone{width:110px; height:110px; border-radius:50%; background:rgba(212,175,55,.08); border:2px solid var(--gold-dim); position:relative; pointer-events:auto;}
@@ -383,7 +384,7 @@ html,body{
 /* ---------- FASE 2: CHASE ---------- */
 #screen-chase{padding:0; background:#4a3f56;}
 #chase-wrap{width:100%; height:100%;}
-#chase-hud{position:absolute; top:8px; left:12px; z-index:10; display:flex; align-items:center; gap:10px;}
+#chase-hud{position:absolute; top:8px; left:12px; z-index:10; display:flex; align-items:center; gap:10px; pointer-events:none;}
 #chaseCanvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none;}
 #chase-start-overlay, #chase-over-overlay{
   position:absolute; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -393,7 +394,7 @@ html,body{
 /* ---------- FASE 3: JOURNEY ---------- */
 #screen-journey{padding:0; background:#3a4a5c;}
 #journey-wrap{width:100%; height:100%;}
-#journey-hud{position:absolute; top:8px; left:0; right:0; z-index:10; display:flex; gap:14px; padding:0 12px; align-items:center;}
+#journey-hud{position:absolute; top:8px; left:0; right:0; z-index:10; display:flex; gap:14px; padding:0 12px; align-items:center; pointer-events:none;}
 #journeyCanvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none;}
 #journey-start-overlay, #journey-end-overlay{
   position:absolute; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -428,7 +429,7 @@ html,body{
 /* ---------- FASE 4: WINTER ---------- */
 #screen-winter{padding:0; background:#4a6478;}
 #winter-wrap{width:100%; height:100%;}
-#winter-hud{position:absolute; top:8px; left:0; right:0; z-index:10; display:flex; gap:14px; padding:0 12px; align-items:center;}
+#winter-hud{position:absolute; top:8px; left:0; right:0; z-index:10; display:flex; gap:14px; padding:0 12px; align-items:center; pointer-events:none;}
 #winterCanvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none;}
 #winter-start-overlay, #winter-end-overlay{
   position:absolute; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -526,8 +527,47 @@ html,body{
 
 @media (max-width:520px){
   body{font-size:18px;}
+  .screen{padding:14px;}
   .pixel-title{font-size:12px;}
   #boot-log{font-size:17px;}
+  #splash-content{width:94vw; padding:10px 0;}
+  #splash-title-1{font-size:13px;}
+  #splash-title-2{font-size:20px;}
+  #splash-frame{width:min(270px,78vw); margin-bottom:14px;}
+  #phase-badges{gap:9px; margin-bottom:14px;}
+  .phase-badge{width:40px; height:40px; font-size:17px;}
+  #btn-splash-start{font-size:11px; padding:14px 22px;}
+  #splash-hint{font-size:13px;}
+  #boot-frame{width:94vw; max-height:84vh; padding:20px 14px;}
+  #hub-content{width:96vw; max-height:calc(100dvh - 20px); padding:4px 0 12px;}
+  #hub-content .sub{font-size:14px; margin-bottom:12px;}
+  .modal-box{width:96vw; max-height:88dvh; padding:18px 14px;}
+  #game-hud{gap:6px 8px; padding:7px 8px; font-size:12px;}
+  .hud-chip{min-width:0; flex:1 1 42%; gap:4px;}
+  .hud-chip .mini-bar{width:42px;}
+  #game-timer{font-size:10px; margin-left:0; flex:1 1 100%; text-align:center;}
+  #mobile-controls{bottom:max(12px, env(safe-area-inset-bottom)); padding:0 12px; align-items:flex-end;}
+  #joystick-zone{width:94px; height:94px;}
+  #joystick-nub{width:38px; height:38px; left:26px; top:26px;}
+  #action-btn{width:68px; height:68px; font-size:8px;}
+  #desktop-hint{bottom:4px; font-size:11px;}
+  #game-end-overlay,#chase-start-overlay,#chase-over-overlay,#journey-start-overlay,#journey-end-overlay,#winter-start-overlay,#winter-end-overlay{
+    overflow-y:auto; -webkit-overflow-scrolling:touch; justify-content:flex-start; padding-top:max(20px, 10vh); padding-bottom:24px;
+  }
+  #game-toast{font-size:9px; max-width:92%;}
+  #chase-hud,#journey-hud,#winter-hud{font-size:12px; gap:7px; padding-left:8px; padding-right:8px;}
+  #screen-final{justify-content:flex-start;}
+  #final-box{width:96vw; padding:18px 0;}
+  #final-stats{font-size:16px; margin:12px 0;}
+  #final-msg{font-size:17px; line-height:1.45;}
+  #screen-end{overflow-y:auto; justify-content:flex-start; touch-action:pan-y;}
+  #end-content{width:94vw; padding:34px 0 42px;}
+  #end-title{font-size:22px; letter-spacing:2px; margin-bottom:14px;}
+  #end-credits{font-size:14px; margin-top:14px;}
+  #end-buttons{width:100%; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:16px;}
+  #end-buttons .btn{font-size:9px; padding:12px 10px;}
+  #npc-stack{left:8px; right:8px; bottom:max(12px, env(safe-area-inset-bottom)); max-width:none;}
+  .npc-text-wrap{max-width:calc(100vw - 68px); font-size:13px;}
 }
 </style>
 </head>
