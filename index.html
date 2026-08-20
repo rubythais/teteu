@@ -1744,8 +1744,8 @@ const ChasePhase = (() => {
     });
 
     // jaguar mascot chasing from the left
-    const jx = w*0.22 - jaguarGap;
-    drawJaguar(ctx, jx, groundY-30);
+    const jx = Math.max(8, w*0.22 - jaguarGap);
+    drawJaguar(ctx, jx, groundY-26);
 
     // player sprite
     drawMatheusSprite(ctx, w*0.22, playerY, 0.85, true, jumping);
@@ -1754,7 +1754,7 @@ const ChasePhase = (() => {
   function drawJaguar(ctx,x,y){
     const ready = oncaImg.complete && oncaImg.naturalWidth>0;
     if(ready){
-      const targetH = 36;
+      const targetH = 52;
       const targetW = targetH * (oncaImg.width/oncaImg.height);
       ctx.save();
       // source art faces left; she's chasing toward the right, so mirror her
@@ -1894,7 +1894,7 @@ const JourneyPhase = (() => {
       ctx.beginPath(); ctx.moveTo(lx,0); ctx.lineTo(lx,h); ctx.stroke();
     }
     ctx.setLineDash([]);
-    ctx.font='24px sans-serif'; ctx.textAlign='center';
+    ctx.font='24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'; ctx.textAlign='center';
     items.forEach(it=>{ ctx.fillText(it.data.icon, laneX[it.lane]+16, it.y+24); });
     particles.forEach(p=>{ ctx.globalAlpha=Math.max(p.life,0); ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,4,4); ctx.globalAlpha=1; });
     drawMatheusSprite(ctx, player.x, player.y, 0.8, true, false, facingLeft);
@@ -2063,7 +2063,7 @@ const WinterPhase = (() => {
         ctx.restore();
       }
     }
-    ctx.font='26px sans-serif'; ctx.textAlign='center';
+    ctx.font='26px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'; ctx.textAlign='center';
     items.forEach(it=>{
       ctx.save(); ctx.globalAlpha = 0.9;
       ctx.beginPath(); ctx.arc(it.x, it.y, it.r, 0, Math.PI*2);
@@ -2095,7 +2095,11 @@ const WinterPhase = (() => {
   function loop(){ if(!running) return; spriteFrame++; update(); draw(); raf = requestAnimationFrame(loop); }
 
   function start(){
-    canvas = document.getElementById('winterCanvas'); ctx = canvas.getContext('2d');
+    showScreen('screen-winter');
+    canvas = document.getElementById('winterCanvas');
+    if(!canvas) return;
+    ctx = canvas.getContext('2d');
+    if(!ctx) return;
     resize(); window.addEventListener('resize', resize);
     items=[]; particles=[]; frio=20; coins=0; timeLeft=30; minFrioTracked=20; maxFrioSeen=20; shatters=0; running=true;
     refreshBars();
@@ -2104,7 +2108,7 @@ const WinterPhase = (() => {
     spawnT = setInterval(spawn, 560);
     tickT = setInterval(()=>{ timeLeft--; refreshBars(); }, 1000);
     ravenT = setInterval(maybeRaven, 6000);
-    loop();
+    requestAnimationFrame(()=>{ resize(); loop(); });
   }
 
   function bindControls(){
