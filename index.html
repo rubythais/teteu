@@ -2526,12 +2526,16 @@ document.getElementById('btn-open-winter').addEventListener('click', ()=>{
 document.getElementById('btn-winter-start').addEventListener('click', ()=>WinterPhase.start());
 document.getElementById('btn-winter-start').addEventListener('touchend', e=>{ e.preventDefault(); WinterPhase.start(); }, {passive:false});
 document.getElementById('btn-winter-exit').addEventListener('click', returnToHub);
-document.getElementById('btn-winter-next').addEventListener('click', ()=>{
+function openGrandFinal(){
+  if(openGrandFinal.started) return;
+  openGrandFinal.started = true;
   showPhaseTransition('GRANDE FINAL<br>ANIVERSÁRIO DO MATHEUS', ()=>{
     document.getElementById('winter-end-overlay').style.display = 'none';
     startRenderSequence();
   });
-});
+}
+document.getElementById('btn-winter-next').addEventListener('click', openGrandFinal);
+document.getElementById('btn-winter-next').addEventListener('touchend', e=>{ e.preventDefault(); openGrandFinal(); }, {passive:false});
 
 /* ============================================================
    ARQUIVO GoT: fatos rotativos + gerador de teoria maluca
