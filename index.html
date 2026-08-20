@@ -646,14 +646,9 @@ html,body{
           <div class="node-label">FASE 2<br>Fuga da Onça</div>
         </div>
         <div class="hub-connector"></div>
-        <div class="hub-node" id="node-f3" data-target="btn-open-journey">
-          <div class="node-circle"><span class="node-icon">🧳</span><span class="node-check">✓</span><span class="node-lock">🔒</span></div>
-          <div class="node-label">FASE 3<br>Natal → SP</div>
-        </div>
-        <div class="hub-connector"></div>
-        <div class="hub-node" id="node-f4" data-target="btn-open-winter">
+        <div class="hub-node" id="node-f3" data-target="btn-open-winter">
           <div class="node-circle"><span class="node-icon">❄️</span><span class="node-check">✓</span><span class="node-lock">🔒</span></div>
-          <div class="node-label">FASE 4<br>O Inverno</div>
+          <div class="node-label">FASE 3<br>O Inverno</div>
         </div>
         <div class="hub-connector"></div>
         <div class="hub-node final" id="node-final">
@@ -1808,8 +1803,8 @@ const JourneyPhase = (() => {
   let saudade=25, transito=20, timeLeft=32, collected=0, target=10;
   let lane=1, laneX=[0,0,0], laneTargetX=0;
   let facingLeft=false; let scrollY=0;
-  const GOOD = [{icon:'☀️', s:'saudade', v:-14},{icon:'🌊', s:'saudade', v:-16},{icon:'🫓', s:'saudade', v:-12}];
-  const BAD  = [{icon:'🚕', s:'transito', v:16},{icon:'🌧️', s:'transito', v:12}];
+  const GOOD = [{icon:'☀️', fallback:'SOL', s:'saudade', v:-14},{icon:'🌊', fallback:'MAR', s:'saudade', v:-16},{icon:'🫓', fallback:'TAP', s:'saudade', v:-12}];
+  const BAD  = [{icon:'🚕', fallback:'CAR', s:'transito', v:16},{icon:'🌧️', fallback:'CHU', s:'transito', v:12}];
 
   function computeLanes(w){
     const laneW = w/3;
@@ -1895,7 +1890,14 @@ const JourneyPhase = (() => {
     }
     ctx.setLineDash([]);
     ctx.font='24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'; ctx.textAlign='center';
-    items.forEach(it=>{ ctx.fillText(it.data.icon, laneX[it.lane]+16, it.y+24); });
+    items.forEach(it=>{
+      const x = laneX[it.lane]+16;
+      ctx.beginPath(); ctx.arc(x, it.y+15, 22, 0, Math.PI*2);
+      ctx.fillStyle = it.good ? 'rgba(111,207,127,.24)' : 'rgba(232,66,90,.24)'; ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(it.data.icon, x, it.y+24);
+      ctx.font='10px "Press Start 2P", monospace'; ctx.fillStyle = '#fff'; ctx.fillText(it.data.fallback, x, it.y+42);
+      ctx.font='24px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+    });
     particles.forEach(p=>{ ctx.globalAlpha=Math.max(p.life,0); ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,4,4); ctx.globalAlpha=1; });
     drawMatheusSprite(ctx, player.x, player.y, 0.8, true, false, facingLeft);
   }
@@ -1952,6 +1954,7 @@ const JourneyPhase = (() => {
    ============================================================ */
 const WinterPhase = (() => {
   let canvas, ctx, raf, running=false;
+  let starting = false;
   let items=[]; let particles=[];
   let frio=20, coins=0, timeLeft=30;
   let minFrioTracked=20, maxFrioSeen=20, shatters=0;
@@ -2095,11 +2098,13 @@ const WinterPhase = (() => {
   function loop(){ if(!running) return; spriteFrame++; update(); draw(); raf = requestAnimationFrame(loop); }
 
   function start(){
+    if(running || starting) return;
+    starting = true;
     showScreen('screen-winter');
     canvas = document.getElementById('winterCanvas');
-    if(!canvas) return;
+    if(!canvas){ starting = false; return; }
     ctx = canvas.getContext('2d');
-    if(!ctx) return;
+    if(!ctx){ starting = false; return; }
     resize(); window.addEventListener('resize', resize);
     items=[]; particles=[]; frio=20; coins=0; timeLeft=30; minFrioTracked=20; maxFrioSeen=20; shatters=0; running=true;
     refreshBars();
@@ -2108,6 +2113,7 @@ const WinterPhase = (() => {
     spawnT = setInterval(spawn, 560);
     tickT = setInterval(()=>{ timeLeft--; refreshBars(); }, 1000);
     ravenT = setInterval(maybeRaven, 6000);
+    starting = false;
     requestAnimationFrame(()=>{ resize(); loop(); });
   }
 
@@ -2490,11 +2496,9 @@ document.getElementById('btn-chase-start').addEventListener('click', ()=>ChasePh
 document.getElementById('btn-chase-retry').addEventListener('click', ()=>ChasePhase.start());
 document.getElementById('btn-chase-exit').addEventListener('click', returnToHub);
 document.getElementById('btn-chase-next').addEventListener('click', ()=>{
-  showPhaseTransition('FASE 3<br>NATAL → SÃO PAULO', ()=>{
+  showPhaseTransition('FASE 3<br>O INVERNO NÃO CHEGA', ()=>{
     document.getElementById('chase-over-overlay').style.display = 'none';
-    showScreen('screen-journey');
-    document.getElementById('journey-start-overlay').style.display = 'flex';
-    document.getElementById('journey-end-overlay').style.display = 'none';
+    document.getElementById('btn-open-winter').click();
   });
 });
 
@@ -2520,6 +2524,7 @@ document.getElementById('btn-open-winter').addEventListener('click', ()=>{
   document.getElementById('winter-end-overlay').style.display = 'none';
 });
 document.getElementById('btn-winter-start').addEventListener('click', ()=>WinterPhase.start());
+document.getElementById('btn-winter-start').addEventListener('touchend', e=>{ e.preventDefault(); WinterPhase.start(); }, {passive:false});
 document.getElementById('btn-winter-exit').addEventListener('click', returnToHub);
 document.getElementById('btn-winter-next').addEventListener('click', ()=>{
   showPhaseTransition('GRANDE FINAL<br>ANIVERSÁRIO DO MATHEUS', ()=>{
@@ -2604,8 +2609,7 @@ function renderHubPath(){
   const nodes = [
     {id:'node-f1', unlocked:true,      done:d.f1},
     {id:'node-f2', unlocked:d.f1,      done:d.f2},
-    {id:'node-f3', unlocked:d.f2,      done:d.f3},
-    {id:'node-f4', unlocked:d.f3,      done:d.f4},
+    {id:'node-f3', unlocked:d.f2,      done:d.f4},
   ];
   let currentSet = false;
   nodes.forEach(n=>{
@@ -2617,7 +2621,7 @@ function renderHubPath(){
     if(isCurrent) currentSet = true;
   });
   const finalEl = document.getElementById('node-final');
-  const allDone = d.f1 && d.f2 && d.f3 && d.f4;
+  const allDone = d.f1 && d.f2 && d.f4;
   finalEl.classList.toggle('locked', !allDone);
   finalEl.classList.toggle('ready', allDone);
 }
@@ -2629,11 +2633,10 @@ function goToPhase(btnId, unlocked){
 
 document.getElementById('node-f1').addEventListener('click', ()=> goToPhase('btn-open-game', true));
 document.getElementById('node-f2').addEventListener('click', ()=> goToPhase('btn-open-chase', State.phasesDone.f1));
-document.getElementById('node-f3').addEventListener('click', ()=> goToPhase('btn-open-journey', State.phasesDone.f2));
-document.getElementById('node-f4').addEventListener('click', ()=> goToPhase('btn-open-winter', State.phasesDone.f3));
+document.getElementById('node-f3').addEventListener('click', ()=> goToPhase('btn-open-winter', State.phasesDone.f2));
 document.getElementById('node-final').addEventListener('click', ()=>{
-  const allDone = State.phasesDone.f1 && State.phasesDone.f2 && State.phasesDone.f3 && State.phasesDone.f4;
-  if(!allDone){ toast('COMPLETE AS 4 FASES<br>PARA CHEGAR AO GRANDE FINAL.'); Audio_.error(); return; }
+  const allDone = State.phasesDone.f1 && State.phasesDone.f2 && State.phasesDone.f4;
+  if(!allDone){ toast('COMPLETE AS 3 FASES<br>PARA CHEGAR AO GRANDE FINAL.'); Audio_.error(); return; }
   startRenderSequence();
 });
 
